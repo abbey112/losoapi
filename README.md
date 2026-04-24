@@ -1,59 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+This project is a RESTful API built with Laravel that simulates a multi-vendor product and inventory management system.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Vendors can manage their products, while users (guests) can browse products and place orders. The system ensures proper inventory handling, data consistency, and follows backend best practices.
+Setup Instructions
+1. Clone Repository
+git clone https://github.com/abbey112/losoapi.git
+cd losoapi
+2. Install Dependencies
+composer install
+3. Configure Environment
+cp .env.example .env
 
-## About Laravel
+Update your database credentials in .env:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+DB_DATABASE=losoapi
+DB_USERNAME=root
+DB_PASSWORD=
+4. Generate Application Key
+php artisan key:generate
+5. Start Development Server
+php artisan serve
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+API will be available at:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+http://127.0.0.1:8000/api
+ Authentication
+Authentication is handled using Laravel Sanctum.
+Register
+POST /api/auth/register
+Request Body:
 
-## Learning Laravel
+{
+  "name": "Vendor 1",
+  "email": "vendor@example.com",
+  "password": "password"
+}
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Login
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+POST /api/auth/login
 
-## Laravel Sponsors
+Response:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+{
+  "token": "your-access-token"
+}
 
-### Premium Partners
+Use token in headers:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Authorization: Bearer {token}
+Product Endpoints
+Public Routes
+Get All Active Products
 
-## Contributing
+GET /api/products
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Get Single Product
 
-## Code of Conduct
+GET /api/products/{id}
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Search Products
 
-## Security Vulnerabilities
+GET /api/search?query=shoe
+Vendor Routes (Authenticated)
+Create Product
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+POST /api/products
 
-## License
+{
+  "name": "Sneakers",
+  "description": "Comfortable shoes",
+  "price": 15000,
+  "stock_quantity": 10
+}
+Update Product
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+PUT /api/products/{id}
+
+Delete Product
+DELETE /api/products/{id}
+Get Vendor Products
+
+GET /api/vendor
+Order Endpoint
+Place Order
+POST /api/order
+
+{
+  "product_id": 1,
+  "quantity": 2
+}
+Design Decisions
+Laravel Sanctum was used for lightweight token-based authentication
+Service Layer Pattern was implemented to separate business logic from controllers
+Database Transactions ensure atomic operations during order placement
+Pagination is applied to product listing for scalability
+RESTful API design with proper HTTP status codes
+Assumptions
+Users in the system act as vendors
+Orders are simplified and do not require full user accounts
+Payment processing is not included (out of scope)
+Product status determines visibility to the public

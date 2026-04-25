@@ -12,7 +12,7 @@ class ProductService
     public function getActiveProducts(array $filters = [], int $perPage = 15):LengthAwarePaginator
     {
         $page = request()->query('page', 1);
-      //  $cacheKey = "products:active:page:{$page}:per_page:{$perPage}:" . http_build_query($filters);
+      // $cacheKey = "products:active:page:{$page}:per_page:{$perPage}:" . http_build_query($filters);
 
         return Cache::remember("product.active.page.{$page}.per_page.{$perPage}:", self::CACHE_TTL, function () use ( $perPage) {
            return Product::active()
@@ -22,10 +22,11 @@ class ProductService
         });
     }
 
-    public function searchProducts(string $term, int $perPage = 15):LengthAwarePaginator
+    public function searchProducts(?string $term, int $perPage = 15): LengthAwarePaginator
     {
+         
       return Product::active()
-            ->search($term)
+            ->when($term, fn ($q) => $q->search($term))
             ->with('vendor:id,name,business_name')
             ->latest()
             ->paginate($perPage);

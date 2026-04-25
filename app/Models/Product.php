@@ -23,8 +23,12 @@ class Product extends Model
     {        return $query->where('status', 'active');
     }
 
-    public function scopeSearch($query, string $term)
+    public function scopeSearch($query, ?string $term)
     {
+         if (empty($term)) {
+        return $query;
+    }
+
         return $query->where('name', 'like',"%{$term}%");
                      
     }

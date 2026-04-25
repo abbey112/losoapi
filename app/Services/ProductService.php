@@ -26,7 +26,7 @@ class ProductService
     {
       return Product::active()
             ->search($term)
-            ->with('vendor:id,name, business_name')
+            ->with('vendor:id,name,business_name')
             ->latest()
             ->paginate($perPage);
     }
@@ -34,7 +34,7 @@ class ProductService
     public function getActiveProduct(int $id): ?Product
     {
         return Product::active()
-            ->with('vendor:id,name, business_name')
+            ->with('vendor:id,name,business_name')
             ->find($id);
     }
 
